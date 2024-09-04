@@ -9,9 +9,9 @@ app.use(bodyParser.json({ extended: true }));
 
 // Logging Middleware
 app.use((req, res, next) => {
-  const time = new Date();
+  const time = new Date().toLocaleTimeString();
   console.log(`-----
-    ${time.toLocaleTimeString()}: Received a ${req.method} request to ${req.url}.`);
+    ${time}: Received a ${req.method} request to ${req.url}.`);
   if (Object.keys(req.body).length > 0) {
     console.log("Containing the data:");
     console.log(`${JSON.stringify(req.body)}`);
@@ -22,6 +22,14 @@ app.use((req, res, next) => {
 // 404 Middleware
 app.use((req, res, next) => {
   next(error(404, "Resource Not Found"));
+});
+
+// Error-handling middleware.
+// Any call to next() that includes an Error() will skip regular middleware
+// and only be processed by error-handling middleware.
+app.use((err, req, res, next) => {
+  res.status(err.status || 500);
+  res.json({ error: err.message });
 });
 
 // Start express server
