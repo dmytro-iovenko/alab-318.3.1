@@ -19,6 +19,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// 404 Middleware
+app.use((req, res, next) => {
+  next(error(404, "Resource Not Found"));
+});
+
 // Start express server
 app.listen(3000, () => {
   console.log("Server is running on port:", port);
