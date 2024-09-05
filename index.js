@@ -4,6 +4,8 @@ const users = require("./routes/users");
 const posts = require("./routes/posts");
 const comments = require("./routes/comments");
 
+const error = require("./utils/error");
+
 const app = express();
 const port = 3000;
 

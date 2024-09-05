@@ -32,4 +32,13 @@ router
     } else next(error(400, "Insufficient Data"));
   });
 
+router
+  .route("/:id")
+  // Retrieves the comment with the specified id
+  .get((req, res, next) => {
+    const comment = comments.find((c) => c.id == req.params.id);
+    if (comment) res.json(comment);
+    else next();
+  });
+
 module.exports = router;
