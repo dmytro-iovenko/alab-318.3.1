@@ -4,6 +4,7 @@ const router = express.Router();
 const users = require("../data/users");
 const error = require("../utils/error");
 const posts = require("../data/posts");
+const comments = require("../data/comments");
 
 router
   .route("/")
@@ -52,6 +53,16 @@ router
         rel: "",
         type: "DELETE",
       },
+      {
+        href: `/${req.params.id}/posts`,
+        rel: "",
+        type: "GET",
+      },
+      {
+        href: `/${req.params.id}/comments`,
+        rel: "",
+        type: "GET",
+      },
     ];
 
     if (user) res.json({ user, links });
@@ -82,10 +93,30 @@ router
     else next();
   });
 
-// Retrieves all posts by a user with the specified id.
-router.get("/:id/posts", (req, res) => {
-  const userPosts = posts.filter((p) => p.userId == req.params.id);
-  res.json(userPosts);
-});
+router
+  .route("/:id/posts")
+  // Retrieves all posts by a user with the specified id.
+  .get((req, res, next) => {
+    // Check if user with the specified id exists
+    const user = users.find((u) => u.id == req.params.id);
+    // and return if it doesn't (to trigger 404 middleware)
+    if (!user) return next();
+    // Get all user's posts
+    const userPosts = posts.filter((p) => p.userId == req.params.id);
+    res.json(userPosts);
+  });
+
+router
+  .route("/:id/comments")
+  // Retrieves comments made by the user with the specified id.
+  .get((req, res, next) => {
+    // Check if user with the specified id exists
+    const user = users.find((u) => u.id == req.params.id);
+    // and return if it doesn't (to trigger 404 middleware)
+    if (!user) return next();
+    // Get all user's comments
+    let userComments = comments.filter((c) => c.userId == req.params.id);
+    res.json(userComments);
+  });
 
 module.exports = router;

@@ -100,7 +100,7 @@ router
   .get((req, res) => {
     // Get all comments made on the post with the specified id
     const posts = comments.filter((c) => c.postId == req.params.id);
-    if (posts) res.json(posts);
+    res.json(posts);
   });
 
 module.exports = router;
