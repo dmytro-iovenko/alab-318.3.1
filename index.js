@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const users = require("./routes/users");
 const posts = require("./routes/posts");
+const comments = require("./routes/comments");
 
 const app = express();
 const port = 3000;
@@ -25,6 +26,7 @@ app.use((req, res, next) => {
 // Use our Routes
 app.use("/api/users", users);
 app.use("/api/posts", posts);
+app.use("/comments", comments);
 
 // 404 Middleware
 app.use((req, res, next) => {
