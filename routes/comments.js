@@ -26,12 +26,12 @@ router
       },
       {
         href: "comments/?userId=<VALUE>",
-        rel: "",
+        rel: "<VALUE>",
         type: "GET",
       },
       {
         href: "comments/?postId=<VALUE>",
-        rel: "",
+        rel: "<VALUE>",
         type: "GET",
       },
     ];

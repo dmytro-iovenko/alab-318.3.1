@@ -3,6 +3,7 @@ const router = express.Router();
 
 const posts = require("../data/posts");
 const error = require("../utils/error");
+const comments = require("../data/comments");
 
 router
   .route("/")
@@ -13,13 +14,18 @@ router
         rel: ":id",
         type: "GET",
       },
+      {
+        href: "posts/?userId=<VALUE>",
+        rel: "<VALUE>",
+        type: "GET",
+      },
     ];
     let result = posts;
     // Retrieves all posts by a user with the specified postId.
     console.log(req.query);
     if (req.query.userId) {
       console.log(req.query);
-      result = posts.filter((p) => p.userId == req.query.userId);
+      result = result.filter((p) => p.userId == req.query.userId);
     }
     res.json({ result, links });
   })
@@ -53,6 +59,11 @@ router
         rel: "",
         type: "DELETE",
       },
+      {
+        href: `/${req.params.id}/comments`,
+        rel: "",
+        type: "GET",
+      },
     ];
 
     if (post) res.json({ post, links });
@@ -81,6 +92,15 @@ router
 
     if (post) res.json(post);
     else next();
+  });
+
+router
+  .route("/:id/comments")
+  // Retrieves all comments made on the post with the specified id
+  .get((req, res) => {
+    // Get all comments made on the post with the specified id
+    const posts = comments.filter((c) => c.postId == req.params.id);
+    if (posts) res.json(posts);
   });
 
 module.exports = router;
