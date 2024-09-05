@@ -28,7 +28,29 @@ app.use((req, res, next) => {
 // Use our Routes
 app.use("/api/users", users);
 app.use("/api/posts", posts);
-app.use("/comments", comments);
+app.use("/api/comments", comments);
+
+// Filtering Middleware
+app.use((req, res, next) => {
+  // Get req.locals (recommended way of passing data through middleware)
+  let locals = req.locals;
+  // Loop through data object to handle all possible keys except 'links'
+  for (const key in locals) {
+    // Skip links
+    if (key === "links") continue;
+    // Filter data by a user with the specified userId
+    if (req.query.userId) {
+      locals[key] = locals[key].filter((d) => d.userId == req.query.userId);
+    }
+    // Filter data by a post with the specified postId
+    if (req.query.postId) {
+      locals[key] = locals[key].filter((d) => d.postId == req.query.postId);
+    }
+  }
+  // Send filtered data
+  if (locals) res.json(locals);
+  else next();
+});
 
 // 404 Middleware
 app.use((req, res, next) => {

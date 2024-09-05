@@ -7,7 +7,7 @@ const comments = require("../data/comments");
 
 router
   .route("/")
-  .get((req, res) => {
+  .get((req, res, next) => {
     const links = [
       {
         href: "posts/:id",
@@ -20,14 +20,9 @@ router
         type: "GET",
       },
     ];
-    let result = posts;
-    // Retrieves all posts by a user with the specified postId.
-    console.log(req.query);
-    if (req.query.userId) {
-      console.log(req.query);
-      result = result.filter((p) => p.userId == req.query.userId);
-    }
-    res.json({ result, links });
+
+    req.locals = { ...req.locals, posts, links };
+    next()
   })
   .post((req, res, next) => {
     if (req.body.userId && req.body.title && req.body.content) {
@@ -107,13 +102,9 @@ router
     const post = posts.find((p) => p.id == req.params.id);
     // and return if it doesn't (to trigger 404 middleware)
     if (!post) return next();
+
     // Get all comments made on the post with the specified id
     let postComments = comments.filter((c) => c.postId == req.params.id);
-
-    // Retrieves all comments made on the post with the specified id by a user with the specified userId
-    if (req.query.userId) {
-      postComments = postComments.filter((c) => c.userId == req.query.userId);
-    }
 
     const links = [
       {
@@ -128,7 +119,9 @@ router
       },
     ];
 
-    res.json({ postComments, links });
+    // Passing data through filtering middleware
+    req.locals = { ...req.locals, comments: postComments, links };
+    next()
   });
 
 module.exports = router;

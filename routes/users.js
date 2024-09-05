@@ -106,6 +106,7 @@ router
     const user = users.find((u) => u.id == req.params.id);
     // and return if it doesn't (to trigger 404 middleware)
     if (!user) return next();
+
     // Get all user's posts
     const userPosts = posts.filter((p) => p.userId == req.params.id);
 
@@ -117,7 +118,9 @@ router
       },
     ];
 
-    res.json({ userPosts, links });
+    // Passing data through filtering middleware
+    req.locals = { ...req.locals, posts: userPosts, links };
+    next();
   });
 
 router
@@ -128,13 +131,9 @@ router
     const user = users.find((u) => u.id == req.params.id);
     // and return if it doesn't (to trigger 404 middleware)
     if (!user) return next();
+
     // Get all user's comments
     let userComments = comments.filter((c) => c.userId == req.params.id);
-
-    // Retrieves comments made by the user with the specified id on the post with the specified postId
-    if (req.query.postId) {
-      userComments = userComments.filter((c) => c.postId == req.query.postId);
-    }
 
     const links = [
       {
@@ -149,7 +148,9 @@ router
       },
     ];
 
-    res.json({ userComments, links });
+    // Passing data through filtering middleware
+    req.locals = { ...req.locals, comments: userComments, links };
+    next();
   });
 
 module.exports = router;

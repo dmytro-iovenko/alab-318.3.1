@@ -1,23 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-const posts = require("../data/comments");
-const error = require("../utils/error");
 const comments = require("../data/comments");
+const error = require("../utils/error");
 
 router
   .route("/")
-  .get((req, res) => {
-    // Initially get all comments
-    let result = comments;
-    // Retrieves comments by the user with the specified userId.
-    if (req.query.userId) {
-      result = result.filter((c) => c.userId == req.query.userId);
-    }
-    // Retrieves comments made on the post with the specified postId
-    if (req.query.postId) {
-      result = result.filter((c) => c.postId == req.query.postId);
-    }
+  .get((req, res, next) => {
     const links = [
       {
         href: "comments/:id",
@@ -35,7 +24,10 @@ router
         type: "GET",
       },
     ];
-    res.json({ result, links });
+
+    // Passing data through filtering middleware
+    req.locals = { ...req.locals, comments, links };
+    next()
   })
   .post((req, res, next) => {
     if (req.body.userId && req.body.postId && req.body.body) {
