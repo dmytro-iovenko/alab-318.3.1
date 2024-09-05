@@ -63,6 +63,11 @@ router
         rel: "",
         type: "GET",
       },
+      {
+        href: `/${req.params.id}/comments?postId=<VALUE>`,
+        rel: "<VALUE>",
+        type: "GET",
+      },
     ];
 
     if (user) res.json({ user, links });
@@ -103,7 +108,16 @@ router
     if (!user) return next();
     // Get all user's posts
     const userPosts = posts.filter((p) => p.userId == req.params.id);
-    res.json(userPosts);
+
+    const links = [
+      {
+        href: `/${req.params.id}/posts`,
+        rel: "",
+        type: "GET",
+      },
+    ];
+
+    res.json({ userPosts, links });
   });
 
 router
@@ -116,7 +130,26 @@ router
     if (!user) return next();
     // Get all user's comments
     let userComments = comments.filter((c) => c.userId == req.params.id);
-    res.json(userComments);
+
+    // Retrieves comments made by the user with the specified id on the post with the specified postId
+    if (req.query.postId) {
+      userComments = userComments.filter((c) => c.postId == req.query.postId);
+    }
+
+    const links = [
+      {
+        href: `/${req.params.id}/comments`,
+        rel: "",
+        type: "GET",
+      },
+      {
+        href: `/${req.params.id}/comments?postId=<VALUE>`,
+        rel: "<VALUE>",
+        type: "GET",
+      },
+    ];
+
+    res.json({ userComments, links });
   });
 
 module.exports = router;
