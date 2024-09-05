@@ -14,8 +14,14 @@ router
         type: "GET",
       },
     ];
-
-    res.json({ posts, links });
+    let result = posts;
+    // Retrieves all posts by a user with the specified postId.
+    console.log(req.query);
+    if (req.query.userId) {
+      console.log(req.query);
+      result = posts.filter((p) => p.userId == req.query.userId);
+    }
+    res.json({ result, links });
   })
   .post((req, res, next) => {
     if (req.body.userId && req.body.title && req.body.content) {
