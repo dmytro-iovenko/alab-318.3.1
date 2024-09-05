@@ -64,6 +64,11 @@ router
         rel: "",
         type: "GET",
       },
+      {
+        href: `/${req.params.id}/comments?userId=<VALUE>`,
+        rel: "<VALUE>",
+        type: "GET",
+      },
     ];
 
     if (post) res.json({ post, links });
@@ -97,10 +102,33 @@ router
 router
   .route("/:id/comments")
   // Retrieves all comments made on the post with the specified id
-  .get((req, res) => {
+  .get((req, res, next) => {
+    // Check if post with the specified id exists
+    const post = posts.find((p) => p.id == req.params.id);
+    // and return if it doesn't (to trigger 404 middleware)
+    if (!post) return next();
     // Get all comments made on the post with the specified id
-    const posts = comments.filter((c) => c.postId == req.params.id);
-    res.json(posts);
+    let postComments = comments.filter((c) => c.postId == req.params.id);
+
+    // Retrieves all comments made on the post with the specified id by a user with the specified userId
+    if (req.query.userId) {
+      postComments = postComments.filter((c) => c.userId == req.query.userId);
+    }
+
+    const links = [
+      {
+        href: `/${req.params.id}/comments`,
+        rel: "",
+        type: "GET",
+      },
+      {
+        href: `/${req.params.id}/comments?userId=<VALUE>`,
+        rel: "<VALUE>",
+        type: "GET",
+      },
+    ];
+
+    res.json({ postComments, links });
   });
 
 module.exports = router;
