@@ -8,6 +8,12 @@ const comments = require("../data/comments");
 router
   .route("/")
   .get((req, res) => {
+    // Initially get all comments
+    let result = comments;
+    // Retrieves comments by the user with the specified userId.
+    if (req.query.userId) {
+      result = result.filter((c) => c.userId == req.query.userId);
+    }
     const links = [
       {
         href: "comments/:id",
@@ -15,7 +21,7 @@ router
         type: "GET",
       },
     ];
-    res.json({ comments, links });
+    res.json({ result, links });
   })
   .post((req, res, next) => {
     if (req.body.userId && req.body.postId && req.body.body) {
