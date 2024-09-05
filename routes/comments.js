@@ -28,7 +28,7 @@ router
         body: req.body.body,
       };
       comments.push(comment);
-      res.json(comments);
+      res.status(201).json(comments);
     } else next(error(400, "Insufficient Data"));
   });
 
@@ -36,7 +36,27 @@ router
   .route("/:id")
   // Retrieves the comment with the specified id
   .get((req, res, next) => {
+    const links = [
+      {
+        href: `/${req.params.id}`,
+        rel: "",
+        type: "PATCH",
+      },
+    ];
     const comment = comments.find((c) => c.id == req.params.id);
+    if (comment) res.json({ comment, links });
+    else next();
+  })
+  // Used to update a comment with the specified id with a new body
+  .patch((req, res, next) => {
+    const comment = comments.find((c, i) => {
+      if (c.id == req.params.id) {
+        for (const key in req.body) {
+          comments[i][key] = req.body[key];
+        }
+        return true;
+      }
+    });
     if (comment) res.json(comment);
     else next();
   });
