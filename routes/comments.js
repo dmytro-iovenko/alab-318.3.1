@@ -42,6 +42,11 @@ router
         rel: "",
         type: "PATCH",
       },
+      {
+        href: `/${req.params.id}`,
+        rel: "",
+        type: "DELETE",
+      },
     ];
     const comment = comments.find((c) => c.id == req.params.id);
     if (comment) res.json({ comment, links });
@@ -54,6 +59,17 @@ router
         for (const key in req.body) {
           comments[i][key] = req.body[key];
         }
+        return true;
+      }
+    });
+    if (comment) res.json(comment);
+    else next();
+  })
+  // Used to delete a comment with the specified id
+  .delete((req, res, next) => {
+    const comment = comments.find((c, i) => {
+      if (c.id == req.params.id) {
+        comments.splice(i, 1);
         return true;
       }
     });
