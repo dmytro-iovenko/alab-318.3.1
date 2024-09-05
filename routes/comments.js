@@ -14,10 +14,24 @@ router
     if (req.query.userId) {
       result = result.filter((c) => c.userId == req.query.userId);
     }
+    // Retrieves comments made on the post with the specified postId
+    if (req.query.postId) {
+      result = result.filter((c) => c.postId == req.query.postId);
+    }
     const links = [
       {
         href: "comments/:id",
         rel: ":id",
+        type: "GET",
+      },
+      {
+        href: "comments/?userId=<VALUE>",
+        rel: "",
+        type: "GET",
+      },
+      {
+        href: "comments/?postId=<VALUE>",
+        rel: "",
         type: "GET",
       },
     ];
